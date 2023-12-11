@@ -71,4 +71,4 @@ tidydata <- aggregate(. ~subject_id + activity_id, activity_names_final, mean)
 tidydata <- tidydata[order(tidydata$subject_id, tidydata$activity_id),]
 
 
-write.table(tidydata, file = ".../Coursera/tidydata.txt", row.name=FALSE)
+write.table(tidydata, file = "../Coursera/tidydata.txt", row.name=FALSE)
