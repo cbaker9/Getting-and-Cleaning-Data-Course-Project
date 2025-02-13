@@ -3,29 +3,20 @@
 
 library(readr)
 
+#Set Working Directory
+setwd("~/Data/UCI HAR Dataset/test")
+setwd("~/Data/UCI HAR Dataset/train")
+setwd("~/Data/UCI HAR Dataset")
+
+
 subject_test <- read_table("subject_test.txt", col_names = FALSE)
-
-
 X_test <- read_table("X_test.txt", col_names = FALSE)
-
-
 y_test <- read_table("y_test.txt", col_names = FALSE)
-
-
-subject_train <- read_table("~/Coursera/UCI HAR Dataset/train/subject_train.txt", col_names = FALSE)
-
-
-X_train <- read_table("~/Coursera/UCI HAR Dataset/train/X_train.txt", col_names = FALSE)
-
-
-y_train <- read_table("~/Coursera/UCI HAR Dataset/train/y_train.txt", col_names = FALSE)
-
-
-activity_labels <- read_table("~/Coursera/UCI HAR Dataset/activity_labels.txt", col_names = FALSE)
-
-
-features <- read_table("~/Coursera/UCI HAR Dataset/features.txt", col_names = FALSE)
-
+subject_train <- read_table("subject_train.txt", col_names = FALSE)
+X_train <- read_table("X_train.txt", col_names = FALSE)
+y_train <- read_table("y_train.txt", col_names = FALSE)
+activity_labels <- read_table("activity_labels.txt", col_names = FALSE)
+features <- read_table("features.txt", col_names = FALSE)
 
 # Assigning column names
 
@@ -60,15 +51,11 @@ mean_std <- test_train_combined[, grepl("subject_id|activity_id|mean|std", updat
 mean_std[1:2] <- TRUE
 
 
-activity_names_final <- merge(mean_std_final, activity_labels,
+activity_names_final <- merge(mean_std, activity_labels,
                               by='activity_id',
-                             all.x=TRUE)
+                              all.x=TRUE)
 
 
 # From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
-tidydata <- aggregate(. ~subject_id + activity_id, activity_names_final, mean)
-tidydata <- tidydata[order(tidydata$subject_id, tidydata$activity_id),]
-
-
-write.table(tidydata, file = "../Coursera/tidydata.txt", row.name=FALSE)
+write.table(activity_names_final, "tidy.txt", row.names = FALSE, quote = FALSE)
