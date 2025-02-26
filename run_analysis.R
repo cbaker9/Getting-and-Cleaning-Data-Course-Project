@@ -1,61 +1,50 @@
-# Reading all files
 # NOTE: Had to set different working directories to import data
 
 library(readr)
+library(reshape2)
+library(base)
+library(dplyr)
 
-#Set Working Directory
+# Load Data
 setwd("~/Data/UCI HAR Dataset/test")
-setwd("~/Data/UCI HAR Dataset/train")
-setwd("~/Data/UCI HAR Dataset")
-
-
 subject_test <- read_table("subject_test.txt", col_names = FALSE)
 X_test <- read_table("X_test.txt", col_names = FALSE)
 y_test <- read_table("y_test.txt", col_names = FALSE)
+
+setwd("~/Data/UCI HAR Dataset/train")
 subject_train <- read_table("subject_train.txt", col_names = FALSE)
 X_train <- read_table("X_train.txt", col_names = FALSE)
 y_train <- read_table("y_train.txt", col_names = FALSE)
+
+setwd("~/Data/UCI HAR Dataset")
 activity_labels <- read_table("activity_labels.txt", col_names = FALSE)
 features <- read_table("features.txt", col_names = FALSE)
 
-# Assigning column names
+# Merge Training and Test Sets
+X_data <- rbind(X_test, X_train)
+y_data <- rbind(y_test, y_train)
+subject_data <- rbind(subject_test, subject_train)
 
-colnames(subject_test) <- "subject_id"
-colnames(X_test) <- features$X2
-colnames(y_test) <- "activity_id"
-
-colnames(subject_train) <- "subject_id"
-colnames(X_train) <- features$X2
-colnames(y_train) <- "activity_id"
-
-colnames(activity_labels) <- c('activity_id', 'activity_types')
+# Apply Activity Names & Join Tables
+names(subject_data) <- "Subject"
+names(activity_labels) <- c("ActivityID", "Activity")
+y_data <- left_join(y_data, activity_labels, by = c("X1" = "ActivityID"))
 
 
-# Combining test and train data
+# Label the Data Sets
+names(y_data) <- c("Activity ID", "Activity")
+names(X_data) <- features$X1
+final_data <- cbind(subject_data, y_data["Activity"], X_data)
 
-test <- cbind(subject_test, X_test, y_test)
-train <- cbind(subject_train, X_train, y_train)
-test_train_combined <- rbind(train, test)
+# Extract Mean and Standard Deviation Measurements
+mean_std_cols <- grep("mean\\(\\)|std\\(\\)", names(final_data))
+final_data <- final_data[, c(1, 2, mean_std_cols)]
 
+# Create Tidy Data Set with Averages
+tidy_data <- final_data %>%
+  group_by(Subject, Activity) %>%
+  summarise(across(everything(), mean))
 
-# Updating the new column names
+# Create the Tidy Data Text File
+write.table(tidy_data, "tidy_data.txt", row.name = FALSE, quote = FALSE)
 
-updated_names <- colnames(test_train_combined)
-
-
-# Extracts only the measurements on the mean and std deviation for each measurement
-
-mean_std <- test_train_combined[, grepl("subject_id|activity_id|mean|std", updated_names)]
-
-
-mean_std[1:2] <- TRUE
-
-
-activity_names_final <- merge(mean_std, activity_labels,
-                              by='activity_id',
-                              all.x=TRUE)
-
-
-# From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
-
-write.table(activity_names_final, "tidy.txt", row.names = FALSE, quote = FALSE)
