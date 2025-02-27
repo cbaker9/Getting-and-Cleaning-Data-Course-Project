@@ -10,3 +10,5 @@
 1. Merging of the datasets
 2. Extracting the mean and std dev measurements
 3. Labeling columns
+4. Changing the activity id's to their actual descriptions
+
