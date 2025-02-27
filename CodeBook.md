@@ -1,5 +1,5 @@
 ## About the Variables
-* `X_test`, `X_train`, `y_test`, 'y_train`, `subject_test`, `subject_train` - are the given data tables
+* `X_test`, `X_train`, `y_test`, `y_train`, `subject_test`, `subject_train` - are the given data tables
 * `X_data`, `y_data`, `subject_data` - combines the similar datasets above
 * `features` - list of features
 * `activity_labels` - code and description of activity
